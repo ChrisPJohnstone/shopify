@@ -1,0 +1,27 @@
+fragment OrderInfo on Order {
+  createdAt
+  email
+  netPaymentSet {
+    presentmentMoney {
+      currencyCode
+      amount
+    }
+  }
+}
+
+query {
+  orders(first: 10, reverse: true) {
+    edges {
+      cursor
+      node {
+        ...OrderInfo
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+  }
+}
