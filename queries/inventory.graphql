@@ -1,0 +1,13 @@
+query inventoryItems {
+  inventoryItems(first: 5) {
+    edges {
+      node {
+        id
+        unitCost {
+          amount
+          currencyCode
+        }
+      }
+    }
+  }
+}
