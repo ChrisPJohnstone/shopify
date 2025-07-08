@@ -1,0 +1,13 @@
+query GetProducts {
+  products(first: 10) {
+    nodes {
+      id
+      title
+      description
+      priceRange {
+        minVariantPrice { amount }
+        maxVariantPrice { amount }
+      }
+    }
+  }
+}
