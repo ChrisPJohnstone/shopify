@@ -2,12 +2,9 @@
 from argparse import ArgumentParser, Namespace
 from os import environ
 from pathlib import Path
-from typing import Any
-import json
 
-from shopify import GraphQL, Session
+from shopify_util import Client as ShopifyClient
 
-type JSONObject = dict[str, Any]
 
 QUERY_DIR: Path = Path("queries")
 MERCHANT: str = environ["MERCHANT"]
@@ -15,15 +12,9 @@ SHOP_URL: str = f"{MERCHANT}.myshopify.com"
 API_VERSION: str = "2024-07"
 
 
-def get_results(query_path: Path) -> None:
-    query: str = query_path.read_text()
-    result: JSONObject = json.loads(GraphQL().execute(query=query))
-    print(json.dumps(result, indent=2))
-
-
 def main(query_path: Path) -> None:
-    with Session.temp(SHOP_URL, API_VERSION, environ["TOKEN"]):
-        get_results(query_path)
+    shopify_client: ShopifyClient = ShopifyClient(MERCHANT, environ["TOKEN"])
+    shopify_client.request(query_path)
 
 
 if __name__ == "__main__":
