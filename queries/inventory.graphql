@@ -2,8 +2,8 @@ query inventoryItems {
   inventoryItems(first: 5) {
     edges {
       node {
+        id
         variant {
-          id
           # Name of product
           displayName
           # Cost to customer

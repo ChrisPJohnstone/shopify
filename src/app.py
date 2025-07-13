@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-from argparse import ArgumentParser, Namespace
 from os import environ
 from pathlib import Path
+import json
 
 from shopify_util import Client as ShopifyClient
+from type_definitions import JSONObject
 
 
 QUERY_DIR: Path = Path("queries")
@@ -12,13 +13,11 @@ SHOP_URL: str = f"{MERCHANT}.myshopify.com"
 API_VERSION: str = "2024-07"
 
 
-def main(query_path: Path) -> None:
+def main() -> None:
     shopify_client: ShopifyClient = ShopifyClient(MERCHANT, environ["TOKEN"])
-    shopify_client.request(query_path)
+    inventory: JSONObject = shopify_client.get_inventory()
+    print(json.dumps(inventory, indent=2))
 
 
 if __name__ == "__main__":
-    parser: ArgumentParser = ArgumentParser()
-    parser.add_argument("query_path", nargs=1, type=Path)
-    args: Namespace = parser.parse_args()
-    main(args.query_path[0])
+    main()
