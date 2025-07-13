@@ -2,10 +2,26 @@ query inventoryItems {
   inventoryItems(first: 5) {
     edges {
       node {
-        id
+        variant {
+          id
+          # Name of product
+          displayName
+          # Cost to customer
+          price
+        }
         unitCost {
+          # Cost to business
           amount
-          currencyCode
+        }
+        inventoryLevels(first: 1) {
+          edges {
+            node {
+              quantities(names: ["available"]) {
+                name
+                quantity
+              }
+            }
+          }
         }
       }
     }
