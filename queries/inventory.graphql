@@ -1,25 +1,33 @@
-query inventoryItems {
+fragment InventoryInfo on InventoryItem {
+  id
+  variant {
+    # Name of product
+    displayName
+    # Cost to customer
+    price
+  }
+  unitCost {
+    # Cost to business
+    amount
+  }
+}
+
+fragment LevelInfo on InventoryLevel {
+  quantities(names: ["available"]) {
+    name
+    quantity
+  }
+}
+
+query InventoryItems {
   inventoryItems(first: 5) {
     edges {
       node {
-        id
-        variant {
-          # Name of product
-          displayName
-          # Cost to customer
-          price
-        }
-        unitCost {
-          # Cost to business
-          amount
-        }
+        ...InventoryInfo
         inventoryLevels(first: 1) {
           edges {
             node {
-              quantities(names: ["available"]) {
-                name
-                quantity
-              }
+              ...LevelInfo
             }
           }
         }
