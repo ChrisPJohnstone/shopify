@@ -2,9 +2,9 @@ from pathlib import Path
 import json
 import logging
 
-from type_definitions import JSONObject
-
 from shopify import GraphQL, Session
+
+from type_definitions import JSONObject
 
 
 class Client:
@@ -39,7 +39,9 @@ class Client:
     def _request(self, query_path: Path) -> None:
         query: str = query_path.read_text()
         result: JSONObject = json.loads(GraphQL().execute(query=query))
-        print(json.dumps(result, indent=2))
+        if "data" not in result:
+            raise ValueError(json.dumps(result, indent=2))
+        print(json.dumps(result["data"], indent=2))
 
     def request(self, query_path: Path) -> None:
         with Session.temp(self.shop_url, Client.API_VERSION, self.token):
