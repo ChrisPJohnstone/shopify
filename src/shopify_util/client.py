@@ -12,6 +12,7 @@ from type_definitions import JSONObject
 class Client:
     QUERY_DIR: Path = Path("queries")
     API_VERSION: str = "2024-07"
+    PAGE_SIZE: int = 10
 
     def __init__(self, merchant: str, token: str) -> None:
         self.merchant = merchant
@@ -65,9 +66,17 @@ class Client:
 
     def get_inventory_items(self) -> Iterable[InventoryItem]:
         query: str = self.query("inventory")
-        response: JSONObject = self.request(
-            query=query,
-            operation_name="InventoryItems",
-        )
-        for item in response["inventoryItems"]["nodes"]:
-            yield self.get_inventory_item(item["id"])
+        variables: dict[str, int | str] = {"pageSize": Client.PAGE_SIZE}
+        while True:
+            response: JSONObject = self.request(
+                query=query,
+                operation_name="InventoryItems",
+                variables=variables,
+            )
+            inventory_items: JSONObject = response["inventoryItems"]
+            page_info: JSONObject = inventory_items["pageInfo"]
+            for item in inventory_items["nodes"]:
+                yield self.get_inventory_item(item["id"])
+            if not page_info["hasNextPage"]:
+                break
+            variables["cursor"] = page_info["endCursor"]

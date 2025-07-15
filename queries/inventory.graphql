@@ -26,10 +26,14 @@ query InventoryItem($id: ID!) {
   }
 }
 
-query InventoryItems {
-  inventoryItems(first: 5) {
+query InventoryItems($pageSize: Int!, $cursor: String) {
+  inventoryItems(first: $pageSize, after: $cursor) {
     nodes {
       id
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
     }
   }
 }

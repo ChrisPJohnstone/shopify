@@ -17,8 +17,7 @@ API_VERSION: str = "2024-07"
 def main() -> None:
     shopify_client: ShopifyClient = ShopifyClient(MERCHANT, environ["TOKEN"])
     inventory: list[InventoryItem] = list(shopify_client.get_inventory_items())
-    for item in inventory:
-        print(item)
+    print(inventory)
 
 
 if __name__ == "__main__":
