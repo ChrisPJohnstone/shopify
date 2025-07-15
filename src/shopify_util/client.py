@@ -43,18 +43,24 @@ class Client:
         path: Path = Client.QUERY_DIR / f"{query}.graphql"
         return path.read_text()
 
-    def _request(self, query: str) -> JSONObject:
-        result: JSONObject = json.loads(GraphQL().execute(query=query))
+    def _request(self, query: str, **kwargs) -> JSONObject:
+        result_string: str = GraphQL().execute(query=query, **kwargs)
+        result: JSONObject = json.loads(result_string)
         if "data" not in result:
             raise ValueError(json.dumps(result, indent=2))
         return result["data"]
 
-    def request(self, query: str) -> JSONObject:
+    def request(self, query: str, **kwargs) -> JSONObject:
         with Session.temp(self.shop_url, Client.API_VERSION, self.token):
-            return self._request(query)
+            return self._request(query, **kwargs)
 
     def get_inventory(self) -> Iterable[InventoryItem]:
         query: str = self.query("inventory")
-        result: JSONObject = self.request(query)
-        for item in result["inventoryItems"]["nodes"]:
-            yield InventoryItem(item)
+        items: JSONObject = self.request(query, operation_name="InventoryItems")
+        for item in items["inventoryItems"]["nodes"]:
+            response: JSONObject = self.request(
+                query=query,
+                operation_name="InventoryItem",
+                variables={"id": item["id"]},
+            )
+            yield InventoryItem(response)

@@ -20,10 +20,16 @@ fragment InventoryInfo on InventoryItem {
   }
 }
 
+query InventoryItem($id: ID!) {
+  inventoryItem(id: $id) {
+    ...InventoryInfo
+  }
+}
+
 query InventoryItems {
   inventoryItems(first: 5) {
     nodes {
-      ...InventoryInfo
+      id
     }
   }
 }
