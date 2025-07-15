@@ -10,12 +10,13 @@ fragment InventoryInfo on InventoryItem {
     # Cost to business
     amount
   }
-}
-
-fragment LevelInfo on InventoryLevel {
-  quantities(names: ["available"]) {
-    name
-    quantity
+  inventoryLevels(first: 50) {
+    nodes {
+      quantities(names: ["available"]) {
+        name
+        quantity
+      }
+    }
   }
 }
 
@@ -23,11 +24,6 @@ query InventoryItems {
   inventoryItems(first: 5) {
     nodes {
       ...InventoryInfo
-      inventoryLevels(first: 1) {
-        nodes {
-          ...LevelInfo
-        }
-      }
     }
   }
 }
