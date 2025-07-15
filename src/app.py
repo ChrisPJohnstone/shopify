@@ -20,20 +20,11 @@ def main() -> None:
     inventory: list[InventoryItem] = list(client.get_inventory_items())
     output: list[dict[str, str | int]] = []
     for item in inventory:
-        sold: int = len(
-            list(client.get_orders_of_inventory_item(item.variant_id))
-        )
-        """
-        TODO: Fix sold number, the entire approach is based on a lie told by
-        the AI assistant on shopify docs. You can't filter orders by variant
-        so it looks like the only option is to pull all orders and assign them.
-        """
         product: dict[str, str | int] = {
             "name": item.product,
             "price": item.price,
             "cost": item.cost,
             "stock": item.stock,
-            "sold": sold,
         }
         output.append(product)
     print(json.dumps(output, indent=2))

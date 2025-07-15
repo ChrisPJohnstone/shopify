@@ -12,7 +12,7 @@ fragment InventoryInfo on InventoryItem {
     # Cost to business
     amount
   }
-  inventoryLevels(first: 50) {
+  inventoryLevels(first: 250) {
     nodes {
       quantities(names: ["available"]) {
         name
