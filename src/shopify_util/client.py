@@ -54,13 +54,20 @@ class Client:
         with Session.temp(self.shop_url, Client.API_VERSION, self.token):
             return self._request(query, **kwargs)
 
-    def get_inventory(self) -> Iterable[InventoryItem]:
+    def get_inventory_item(self, item_id: str) -> InventoryItem:
         query: str = self.query("inventory")
-        items: JSONObject = self.request(query, operation_name="InventoryItems")
-        for item in items["inventoryItems"]["nodes"]:
-            response: JSONObject = self.request(
-                query=query,
-                operation_name="InventoryItem",
-                variables={"id": item["id"]},
-            )
-            yield InventoryItem(response)
+        response: JSONObject = self.request(
+            query=query,
+            operation_name="InventoryItem",
+            variables={"id": item_id},
+        )
+        return InventoryItem(response)
+
+    def get_inventory_items(self) -> Iterable[InventoryItem]:
+        query: str = self.query("inventory")
+        response: JSONObject = self.request(
+            query=query,
+            operation_name="InventoryItems",
+        )
+        for item in response["inventoryItems"]["nodes"]:
+            yield self.get_inventory_item(item["id"])
