@@ -1,10 +1,12 @@
 import json
+import logging
 
 from type_definitions import JSONObject
 
 
 class Base:
     def __init__(self, value: JSONObject) -> None:
+        logging.debug(value)
         self.__node: JSONObject = value
 
     @property

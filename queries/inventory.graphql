@@ -1,6 +1,8 @@
 fragment InventoryInfo on InventoryItem {
   id
   variant {
+    # Used for collecting orders
+    id
     # Name of product
     displayName
     # Cost to customer

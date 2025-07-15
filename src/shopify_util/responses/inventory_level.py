@@ -14,4 +14,4 @@ class InventoryLevel(Base):
         return self._available
 
     def _sum_quantities(self, name: str) -> int:
-        return sum(filter(lambda x: x["name"] == name, self._quantities))
+        return len([x for x in self._quantities if x["name"] == name])

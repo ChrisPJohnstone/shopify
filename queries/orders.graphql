@@ -1,26 +1,30 @@
 fragment OrderInfo on Order {
-  createdAt
-  email
-  netPaymentSet {
-    presentmentMoney {
-      currencyCode
-      amount
+  id
+  lineItems(first: 10) {
+    nodes {
+      id
+      variant {
+        id
+      }
     }
   }
 }
 
-query {
-  orders(first: 10, reverse: true) {
-    edges {
-      cursor
-      node {
-        ...OrderInfo
-      }
+query OrdersOfInventoryItem(
+  $variantQuery: String!,
+  $pageSize: Int!,
+  $cursor: String
+) {
+  orders(
+    query: $variantQuery,
+    first: $pageSize,
+    after: $cursor
+  ) {
+    nodes {
+      ...OrderInfo
     }
     pageInfo {
       hasNextPage
-      hasPreviousPage
-      startCursor
       endCursor
     }
   }

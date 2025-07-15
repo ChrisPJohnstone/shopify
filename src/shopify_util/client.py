@@ -74,9 +74,30 @@ class Client:
                 variables=variables,
             )
             inventory_items: JSONObject = response["inventoryItems"]
-            page_info: JSONObject = inventory_items["pageInfo"]
             for item in inventory_items["nodes"]:
                 yield self.get_inventory_item(item["id"])
+            page_info: JSONObject = inventory_items["pageInfo"]
             if not page_info["hasNextPage"]:
                 break
             variables["cursor"] = page_info["endCursor"]
+
+    def get_orders_of_inventory_item(
+        self,
+        variant_id: str,
+    ) -> Iterable[JSONObject]:
+        query: str = self.query("orders")
+        variables: dict[str, int | str] = {
+            "variantQuery": f"line_items.variant_id:{variant_id}",
+            "pageSize": Client.PAGE_SIZE,
+        }
+        while True:
+            response: JSONObject = self.request(query, variables=variables)
+            orders: JSONObject = response["orders"]
+            for order in orders["nodes"]:
+                yield order
+                # TODO: Make response object
+            page_info: JSONObject = orders["pageInfo"]
+            if not page_info["hasNextPage"]:
+                break
+            variables["cursor"] = page_info["endCursor"]
+            quit()

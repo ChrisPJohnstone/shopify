@@ -4,15 +4,26 @@ from type_definitions import JSONObject
 
 
 class InventoryItem(Base):
-    def __post_init__(self) -> None:
+    def __init__(self, value: JSONObject) -> None:
+        super().__init__(value)
         self.__inventory_levels: list[InventoryLevel] = [
             InventoryLevel(value)
-            for value in self._node["inventoryLevels"]["nodes"]
+            for value in self._inventory_item["inventoryLevels"]["nodes"]
         ]
 
     @property
+    def _inventory_item(self) -> JSONObject:
+        return self._node["inventoryItem"]
+
+    @property
     def _variant(self) -> JSONObject:
-        return self._node["variant"]
+        return self._inventory_item["variant"]
+
+    @property
+    def variant_id(self) -> str:
+        full_id: str = self._variant["id"]
+        last_slash_pos: int = full_id.rfind("/")
+        return full_id[last_slash_pos + 1 :]
 
     @property
     def product(self) -> str:
@@ -24,11 +35,13 @@ class InventoryItem(Base):
 
     @property
     def _unit_cost(self) -> JSONObject:
-        return self._node["unitCost"]
+        if (cost := self._inventory_item["unitCost"]) is None:
+            return {}
+        return cost
 
     @property
     def cost(self) -> int:
-        return self._unit_cost["amount"]
+        return self._unit_cost.get("amount", 0)
 
     @property
     def _inventory_levels(self) -> list[InventoryLevel]:
