@@ -21,14 +21,12 @@ fragment LevelInfo on InventoryLevel {
 
 query InventoryItems {
   inventoryItems(first: 5) {
-    edges {
-      node {
-        ...InventoryInfo
-        inventoryLevels(first: 1) {
-          edges {
-            node {
-              ...LevelInfo
-            }
+    nodes {
+      ...InventoryInfo
+      inventoryLevels(first: 1) {
+        edges {
+          node {
+            ...LevelInfo
           }
         }
       }

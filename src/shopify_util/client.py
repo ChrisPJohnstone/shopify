@@ -54,18 +54,4 @@ class Client:
     def get_inventory(self) -> JSONObject:
         output: JSONObject = {}
         query: str = self.query("inventory")
-        result: JSONObject = self.request(query)
-        for item in result["inventoryItems"]["edges"]:
-            node: JSONObject = item["node"]
-            variant: JSONObject = node["variant"]
-            inventory_levels: JSONObject = node["inventoryLevels"]["edges"][0]
-            output[node["id"]] = {
-                "product": variant["displayName"],
-                "cost": node["unitCost"]["amount"],
-                "price": variant["price"],
-                "stock": {
-                    quantity["name"]: quantity["quantity"]
-                    for quantity in inventory_levels["node"]["quantities"]
-                },
-            }
-        return output
+        return self.request(query)
