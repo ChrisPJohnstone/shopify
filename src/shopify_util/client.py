@@ -1,9 +1,11 @@
+from collections.abc import Iterable
 from pathlib import Path
 import json
 import logging
 
 from shopify import GraphQL, Session
 
+from .responses import InventoryItem
 from type_definitions import JSONObject
 
 
@@ -51,7 +53,8 @@ class Client:
         with Session.temp(self.shop_url, Client.API_VERSION, self.token):
             return self._request(query)
 
-    def get_inventory(self) -> JSONObject:
-        output: JSONObject = {}
+    def get_inventory(self) -> Iterable[InventoryItem]:
         query: str = self.query("inventory")
-        return self.request(query)
+        result: JSONObject = self.request(query)
+        for item in result["inventoryItems"]["nodes"]:
+            yield InventoryItem(item)

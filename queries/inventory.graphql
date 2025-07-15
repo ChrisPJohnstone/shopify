@@ -24,10 +24,8 @@ query InventoryItems {
     nodes {
       ...InventoryInfo
       inventoryLevels(first: 1) {
-        edges {
-          node {
-            ...LevelInfo
-          }
+        nodes {
+          ...LevelInfo
         }
       }
     }
