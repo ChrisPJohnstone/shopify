@@ -20,14 +20,18 @@ class Controller:
         self._shopify_client: ShopifyClient = shopify_client
 
     def update_inventory_items(self) -> None:
-        latest: str | None = self._database_client.latest_inventory_item()
+        latest: str | None = self._database_client.get_latest("inventory_item")
         for item in self._shopify_client.get_inventory_items(latest):
             self._database_client.add_inventory_item(item)
 
     def update_orders(self) -> None:
-        latest: str | None = self._database_client.latest_order()
+        latest: str | None = self._database_client.get_latest("order")
         for order in self._shopify_client.get_orders(latest):
             self._database_client.add_order(order)
+
+    def get_profit(self) -> None:
+        for row in self._database_client.get_profit():
+            print(row)
 
 
 def main() -> None:
@@ -40,6 +44,7 @@ def main() -> None:
     controller: Controller = Controller(database_client, shopify_client)
     controller.update_inventory_items()
     controller.update_orders()
+    controller.get_profit()
 
 
 if __name__ == "__main__":

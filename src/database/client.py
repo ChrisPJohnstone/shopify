@@ -56,6 +56,11 @@ class Client:
         ddl: str = self.query(table, "ddl")
         self.execute(ddl)
 
+    def get_latest(self, table: str) -> str | None:
+        self.create_table(f"{table}s")
+        query: str = self.query(f"latest_{table}")
+        return self.execute(query)[1][0]
+
     def add_inventory_item(self, item: InventoryItem) -> None:
         self.create_table("inventory_items")
         query: str = self.query("insert_inventory_item")
@@ -82,13 +87,6 @@ class Client:
             }
             self.execute(query, params)
 
-    def _latest(self, table: str) -> str | None:
-        self.create_table(f"{table}s")
-        query: str = self.query(f"latest_{table}")
-        return self.execute(query)[1][0]
-
-    def latest_inventory_item(self) -> str | None:
-        return self._latest("inventory_item")
-
-    def latest_order(self) -> str | None:
-        return self._latest("order")
+    def get_profit(self) -> list[tuple]:
+        query: str = self.query("profit")
+        return self.execute(query)
