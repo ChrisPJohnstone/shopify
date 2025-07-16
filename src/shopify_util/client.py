@@ -51,7 +51,7 @@ class Client:
 
     @token.setter
     def token(self, value: str) -> None:
-        logging.debug(f"Setting token as {value}")
+        logging.debug(f"Setting token")
         self._token: str = value
 
     def query(self, query: str) -> str:
@@ -78,9 +78,14 @@ class Client:
         )
         return InventoryItem(response)
 
-    def get_inventory_items(self) -> Iterable[InventoryItem]:
+    def get_inventory_items(
+        self,
+        latest: str | None = None,
+    ) -> Iterable[InventoryItem]:
         query: str = self.query("inventory")
         variables: dict[str, int | str] = {"pageSize": Client.PAGE_SIZE}
+        if latest is not None:
+            variables["query"] = f"created_at:>'{latest}'"
         while True:
             response: JSONObject = self.request(
                 query=query,
@@ -95,12 +100,11 @@ class Client:
                 break
             variables["cursor"] = page_info["endCursor"]
 
-    def get_orders(self, latest_order: str | None = None) -> Iterable[Order]:
+    def get_orders(self, latest: str | None = None) -> Iterable[Order]:
         query: str = self.query("orders")
         variables: dict[str, int | str] = {"pageSize": Client.PAGE_SIZE}
-        if latest_order is not None:
-            variables["query"] = f"created_at:>'{latest_order}'"
-        print(variables)
+        if latest is not None:
+            variables["query"] = f"created_at:>'{latest}'"
         while True:
             response: JSONObject = self.request(query, variables=variables)
             orders: JSONObject = response["orders"]

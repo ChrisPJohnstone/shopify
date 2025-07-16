@@ -1,5 +1,6 @@
 fragment InventoryInfo on InventoryItem {
   id
+  createdAt
   variant {
     # Used for collecting orders
     id
@@ -28,8 +29,16 @@ query InventoryItem($id: ID!) {
   }
 }
 
-query InventoryItems($pageSize: Int!, $cursor: String) {
-  inventoryItems(first: $pageSize, after: $cursor) {
+query InventoryItems(
+  $pageSize: Int!,
+  $cursor: String,
+  $query: String
+) {
+  inventoryItems(
+    first: $pageSize,
+    after: $cursor,
+    query: $query
+) {
     nodes {
       id
     }

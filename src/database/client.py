@@ -3,7 +3,7 @@ from sqlite3 import Connection, Cursor, connect
 from typing import Any, Sequence
 import logging
 
-from shopify_util import Order
+from shopify_util import InventoryItem, Order
 
 type QueryParams = dict[str, Any] | Sequence[Any] | None
 
@@ -56,6 +56,20 @@ class Client:
         ddl: str = self.query(table, "ddl")
         self.execute(ddl)
 
+    def add_inventory_item(self, item: InventoryItem) -> None:
+        self.create_table("inventory_items")
+        query: str = self.query("insert_inventory_item")
+        params: dict[str, str | int | float] = {
+            "id": item.id,
+            "created_at": item.created_at,
+            "variant_id": item.variant_id,
+            "variant_name": item.variant_name,
+            "variant_price": float(item.variant_price),
+            "unit_cost": float(item.unit_cost),
+            "stock": item.stock,
+        }
+        self.execute(query, params)
+
     def add_order(self, order: Order) -> None:
         self.create_table("orders")
         query: str = self.query("insert_order")
@@ -68,7 +82,13 @@ class Client:
             }
             self.execute(query, params)
 
-    def latest_order(self) -> str | None:
-        self.create_table("orders")
-        query: str = self.query("latest_order")
+    def _latest(self, table: str) -> str | None:
+        self.create_table(f"{table}s")
+        query: str = self.query(f"latest_{table}")
         return self.execute(query)[1][0]
+
+    def latest_inventory_item(self) -> str | None:
+        return self._latest("inventory_item")
+
+    def latest_order(self) -> str | None:
+        return self._latest("order")

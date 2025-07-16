@@ -17,6 +17,14 @@ class InventoryItem(Base):
         return self._node["inventoryItem"]
 
     @property
+    def id(self) -> str:
+        return self._inventory_item["id"]
+
+    @property
+    def created_at(self) -> str:
+        return self._inventory_item["createdAt"]
+
+    @property
     def _variant(self) -> JSONObject:
         return self._inventory_item["variant"]
 
@@ -27,11 +35,11 @@ class InventoryItem(Base):
         return full_id[last_slash_pos + 1 :]
 
     @property
-    def product(self) -> str:
+    def variant_name(self) -> str:
         return self._variant["displayName"]
 
     @property
-    def price(self) -> Decimal:
+    def variant_price(self) -> Decimal:
         return Decimal(self._variant["price"])
 
     @property
@@ -41,7 +49,7 @@ class InventoryItem(Base):
         return cost
 
     @property
-    def cost(self) -> Decimal:
+    def unit_cost(self) -> Decimal:
         return Decimal(self._unit_cost.get("amount", 0))
 
     @property

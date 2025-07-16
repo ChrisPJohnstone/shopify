@@ -13,10 +13,6 @@ class Order(Base):
         return self._node["id"]
 
     @property
-    def cursor(self) -> str:
-        return self._node["cursor"]
-
-    @property
     def created_at(self) -> str:
         return self._node["createdAt"]
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-from csv import DictWriter
+from argparse import ArgumentParser, Namespace
 from os import environ
 from pathlib import Path
+import logging
 
-from output import Output
 from shopify_util import Client as ShopifyClient
 from database import Client as DatabaseClient
 
@@ -13,48 +13,42 @@ SHOP_URL: str = f"{MERCHANT}.myshopify.com"
 API_VERSION: str = "2024-07"
 
 
-def write_to_csv(rows: list[Output]) -> None:
-    with open("test.csv", "w") as file:
-        writer: DictWriter = DictWriter(
-            f=file,
-            fieldnames=rows[0].json_fields,
-        )
-        writer.writeheader()
-        writer.writerows([row.json for row in rows])
+class Controller:
+    def __init__(
+        self,
+        database_client: DatabaseClient,
+        shopify_client: ShopifyClient,
+    ) -> None:
+        self._database_client: DatabaseClient = database_client
+        self._shopify_client: ShopifyClient = shopify_client
 
+    def update_inventory_items(self) -> None:
+        latest: str | None = self._database_client.latest_inventory_item()
+        for item in self._shopify_client.get_inventory_items(latest):
+            self._database_client.add_inventory_item(item)
 
-def update_orders(
-    shopify_client: ShopifyClient,
-    database_client: DatabaseClient,
-) -> None:
-    latest_order: str | None = database_client.latest_order()
-    for order in shopify_client.get_orders(latest_order):
-        database_client.add_order(order)
+    def update_orders(self) -> None:
+        latest: str | None = self._database_client.latest_order()
+        for order in self._shopify_client.get_orders(latest):
+            self._database_client.add_order(order)
 
 
 def main() -> None:
+    database_client: DatabaseClient = DatabaseClient(QUERY_DIR / "sql")
     shopify_client: ShopifyClient = ShopifyClient(
         query_dir=QUERY_DIR / "graphql",
         merchant=MERCHANT,
         token=environ["TOKEN"],
     )
-    database_client: DatabaseClient = DatabaseClient(QUERY_DIR / "sql")
-    update_orders(shopify_client, database_client)
-    quit()
-    output: dict[str, Output] = {
-        item.variant_id: Output(
-            name=item.product,
-            price=item.price,
-            cost=item.cost,
-            stock=item.stock,
-        )
-        for item in shopify_client.get_inventory_items()
-    }
-    for order in shopify_client.get_orders():
-        for line_item in order.line_items:
-            output[line_item.variant_id].sales += 1
-    write_to_csv([v for v in output.values()])
+    controller: Controller = Controller(database_client, shopify_client)
+    controller.update_inventory_items()
+    controller.update_orders()
 
 
 if __name__ == "__main__":
+    parser: ArgumentParser = ArgumentParser()
+    parser.add_argument("-v", "--verbose", action="store_true")
+    args: Namespace = parser.parse_args()
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
     main()
