@@ -79,11 +79,14 @@ class Client:
         self.create_table("orders")
         query: str = self.query("insert_order")
         for line_item in order.line_items:
-            params: dict[str, str] = {
+            params: dict[str, str | float] = {
                 "id": order.id,
                 "created_at": order.created_at,
                 "variant_id": line_item.variant_id,
                 "variant_name": line_item.variant_name,
+                "price": float(line_item.price),
+                "discounted_price": float(line_item.discounted_price),
+                "fees": float(order.fees),
             }
             self.execute(query, params)
 

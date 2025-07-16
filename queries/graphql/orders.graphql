@@ -6,7 +6,28 @@ fragment OrderInfo on Order {
       id
       variant {
         id
+        # Name of product
         displayName
+      }
+      # Price before discounts
+      originalTotalSet {
+        presentmentMoney {
+          amount
+        }
+      }
+      # Approximate price with discounts
+      discountedUnitPriceAfterAllDiscountsSet {
+        presentmentMoney {
+          amount
+        }
+      }
+    }
+  }
+  # Transaction fees
+  transactions(first: 250) {
+    fees {
+      amount {
+        amount
       }
     }
   }

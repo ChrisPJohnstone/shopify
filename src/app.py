@@ -31,7 +31,7 @@ class Controller:
 
     def get_profit(self) -> None:
         for row in self._database_client.get_profit():
-            print(row)
+            print("|".join([str(field) for field in row]))
 
 
 def main() -> None:
