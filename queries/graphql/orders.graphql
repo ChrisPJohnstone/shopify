@@ -1,7 +1,7 @@
 fragment OrderInfo on Order {
   id
   createdAt
-  lineItems(first: 10) {
+  lineItems(first: 250) {
     nodes {
       id
       variant {
@@ -12,8 +12,16 @@ fragment OrderInfo on Order {
   }
 }
 
-query OrdersOfInventoryItem($pageSize: Int!, $cursor: String) {
-  orders(first: $pageSize, after: $cursor) {
+query OrdersOfInventoryItem(
+  $pageSize: Int!,
+  $cursor: String,
+  $query: String
+) {
+  orders(
+    first: $pageSize,
+    after: $cursor,
+    query: $query
+  ) {
     nodes {
       ...OrderInfo
     }

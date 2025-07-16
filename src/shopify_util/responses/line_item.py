@@ -16,3 +16,7 @@ class LineItem(Base):
         full_id: str = self._variant["id"]
         last_slash_pos: int = full_id.rfind("/")
         return full_id[last_slash_pos + 1 :]
+
+    @property
+    def variant_name(self) -> str:
+        return self._variant["displayName"]

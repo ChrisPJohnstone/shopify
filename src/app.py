@@ -5,6 +5,7 @@ from pathlib import Path
 
 from output import Output
 from shopify_util import Client as ShopifyClient
+from database import Client as DatabaseClient
 
 QUERY_DIR: Path = Path("queries")
 MERCHANT: str = environ["MERCHANT"]
@@ -22,12 +23,24 @@ def write_to_csv(rows: list[Output]) -> None:
         writer.writerows([row.json for row in rows])
 
 
+def update_orders(
+    shopify_client: ShopifyClient,
+    database_client: DatabaseClient,
+) -> None:
+    latest_order: str | None = database_client.latest_order()
+    for order in shopify_client.get_orders(latest_order):
+        database_client.add_order(order)
+
+
 def main() -> None:
     shopify_client: ShopifyClient = ShopifyClient(
         query_dir=QUERY_DIR / "graphql",
         merchant=MERCHANT,
         token=environ["TOKEN"],
     )
+    database_client: DatabaseClient = DatabaseClient(QUERY_DIR / "sql")
+    update_orders(shopify_client, database_client)
+    quit()
     output: dict[str, Output] = {
         item.variant_id: Output(
             name=item.product,

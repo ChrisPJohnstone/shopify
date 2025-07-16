@@ -95,9 +95,12 @@ class Client:
                 break
             variables["cursor"] = page_info["endCursor"]
 
-    def get_orders(self) -> Iterable[Order]:
+    def get_orders(self, latest_order: str | None = None) -> Iterable[Order]:
         query: str = self.query("orders")
         variables: dict[str, int | str] = {"pageSize": Client.PAGE_SIZE}
+        if latest_order is not None:
+            variables["query"] = f"created_at:>'{latest_order}'"
+        print(variables)
         while True:
             response: JSONObject = self.request(query, variables=variables)
             orders: JSONObject = response["orders"]

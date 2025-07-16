@@ -13,5 +13,13 @@ class Order(Base):
         return self._node["id"]
 
     @property
+    def cursor(self) -> str:
+        return self._node["cursor"]
+
+    @property
+    def created_at(self) -> str:
+        return self._node["createdAt"]
+
+    @property
     def line_items(self) -> list[LineItem]:
         return self._line_items
