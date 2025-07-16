@@ -8,9 +8,6 @@ from shopify_util import Client as ShopifyClient
 from database import Client as DatabaseClient
 
 QUERY_DIR: Path = Path("queries")
-MERCHANT: str = environ["MERCHANT"]
-SHOP_URL: str = f"{MERCHANT}.myshopify.com"
-API_VERSION: str = "2024-07"
 
 
 class Controller:
@@ -37,7 +34,7 @@ def main() -> None:
     database_client: DatabaseClient = DatabaseClient(QUERY_DIR / "sql")
     shopify_client: ShopifyClient = ShopifyClient(
         query_dir=QUERY_DIR / "graphql",
-        merchant=MERCHANT,
+        merchant=environ["MERCHANT"],
         token=environ["TOKEN"],
     )
     controller: Controller = Controller(database_client, shopify_client)
