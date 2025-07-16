@@ -8,6 +8,10 @@ class Base:
     def __init__(self, value: JSONObject) -> None:
         logging.debug(value)
         self.__node: JSONObject = value
+        self.__post_init__()
+
+    def __post_init__(self) -> None:
+        pass
 
     @property
     def _node(self) -> JSONObject:

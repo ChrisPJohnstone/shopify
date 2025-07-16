@@ -4,8 +4,7 @@ from type_definitions import JSONObject
 
 
 class InventoryItem(Base):
-    def __init__(self, value: JSONObject) -> None:
-        super().__init__(value)
+    def __post_init__(self) -> None:
         self.__inventory_levels: list[InventoryLevel] = [
             InventoryLevel(value)
             for value in self._inventory_item["inventoryLevels"]["nodes"]

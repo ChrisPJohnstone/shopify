@@ -1,11 +1,9 @@
 from ._base import Base
 from .line_item import LineItem
-from type_definitions import JSONObject
 
 
 class Order(Base):
-    def __init__(self, value: JSONObject) -> None:
-        super().__init__(value)
+    def __post_init__(self) -> None:
         self._line_items: list[LineItem] = [
             LineItem(value) for value in self._node["lineItems"]["nodes"]
         ]
