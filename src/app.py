@@ -26,7 +26,7 @@ class Output:
         self._stock: int = stock
         self._sales: int = 0
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         string: str = f"""
         Event: {self.name}
         - Price: {self.price:.2f}
@@ -36,6 +36,17 @@ class Output:
         - Profit: {self.profit:.2f}
         """
         return dedent(string).strip()
+
+    def __repr__(self) -> str:
+        properties: list[str] = [
+            self.name,
+            f"{self.price:.2f}",
+            f"{self.cost:.2f}",
+            str(self.stock),
+            str(self.sales),
+            f"{self.profit:.2f}",
+        ]
+        return "|".join(properties)
 
     @property
     def name(self) -> str:
@@ -81,7 +92,6 @@ def main() -> None:
         )
         for item in client.get_inventory_items()
     }
-    # TODO: Make TypedDict
     for order in client.get_orders():
         for line_item in order.line_items:
             output[line_item.variant_id].sales += 1
