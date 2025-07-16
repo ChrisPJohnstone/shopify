@@ -29,13 +29,13 @@ class Output:
     def __repr__(self) -> str:
         string: str = f"""
         Event: {self.name}
-        - Price: {self.price}
-        - Cost: {self.cost}
+        - Price: {self.price:.2f}
+        - Cost: {self.cost:.2f}
         - Stock: {self.stock}
         - Sales: {self.sales}
-        - Profit: {self.profit}
+        - Profit: {self.profit:.2f}
         """
-        return dedent(string)
+        return dedent(string).strip()
 
     @property
     def name(self) -> str:
