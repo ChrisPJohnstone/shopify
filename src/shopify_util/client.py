@@ -10,13 +10,27 @@ from type_definitions import JSONObject
 
 
 class Client:
-    QUERY_DIR: Path = Path("queries")
     API_VERSION: str = "2024-07"
     PAGE_SIZE: int = 10
 
-    def __init__(self, merchant: str, token: str) -> None:
+    def __init__(
+        self,
+        query_dir: Path,
+        merchant: str,
+        token: str,
+    ) -> None:
+        self.query_dir = query_dir
         self.merchant = merchant
         self.token = token
+
+    @property
+    def query_dir(self) -> Path:
+        return self._query_dir
+
+    @query_dir.setter
+    def query_dir(self, value: Path) -> None:
+        logging.debug(f"Setting query_dir as {value}")
+        self._query_dir: Path = value
 
     @property
     def merchant(self) -> str:
@@ -41,7 +55,7 @@ class Client:
         self._token: str = value
 
     def query(self, query: str) -> str:
-        path: Path = Client.QUERY_DIR / f"{query}.graphql"
+        path: Path = self.query_dir / f"{query}.graphql"
         return path.read_text()
 
     def _request(self, query: str, **kwargs) -> JSONObject:

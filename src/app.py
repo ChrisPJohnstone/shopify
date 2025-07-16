@@ -23,7 +23,11 @@ def write_to_csv(rows: list[Output]) -> None:
 
 
 def main() -> None:
-    client: ShopifyClient = ShopifyClient(MERCHANT, environ["TOKEN"])
+    shopify_client: ShopifyClient = ShopifyClient(
+        query_dir=QUERY_DIR / "graphql",
+        merchant=MERCHANT,
+        token=environ["TOKEN"],
+    )
     output: dict[str, Output] = {
         item.variant_id: Output(
             name=item.product,
@@ -31,9 +35,9 @@ def main() -> None:
             cost=item.cost,
             stock=item.stock,
         )
-        for item in client.get_inventory_items()
+        for item in shopify_client.get_inventory_items()
     }
-    for order in client.get_orders():
+    for order in shopify_client.get_orders():
         for line_item in order.line_items:
             output[line_item.variant_id].sales += 1
     write_to_csv([v for v in output.values()])
