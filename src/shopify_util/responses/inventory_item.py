@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from ._base import Base
 from .inventory_level import InventoryLevel
 from type_definitions import JSONObject
@@ -29,8 +31,8 @@ class InventoryItem(Base):
         return self._variant["displayName"]
 
     @property
-    def price(self) -> int:
-        return self._variant["price"]
+    def price(self) -> Decimal:
+        return Decimal(self._variant["price"])
 
     @property
     def _unit_cost(self) -> JSONObject:
@@ -39,8 +41,8 @@ class InventoryItem(Base):
         return cost
 
     @property
-    def cost(self) -> int:
-        return self._unit_cost.get("amount", 0)
+    def cost(self) -> Decimal:
+        return Decimal(self._unit_cost.get("amount", 0))
 
     @property
     def _inventory_levels(self) -> list[InventoryLevel]:

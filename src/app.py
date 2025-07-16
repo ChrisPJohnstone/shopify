@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-from dataclasses import dataclass
+from decimal import Decimal
 from os import environ
 from pathlib import Path
+from textwrap import dedent
 
 from shopify_util import Client as ShopifyClient
 
@@ -11,13 +12,62 @@ SHOP_URL: str = f"{MERCHANT}.myshopify.com"
 API_VERSION: str = "2024-07"
 
 
-@dataclass
 class Output:
-    name: str
-    price: int
-    cost: int
-    stock: int
-    sales: int = 0
+    def __init__(
+        self,
+        name: str,
+        price: Decimal,
+        cost: Decimal,
+        stock: int,
+    ) -> None:
+        self._name: str = name
+        self._price: Decimal = price
+        self._cost: Decimal = cost
+        self._stock: int = stock
+        self._sales: int = 0
+
+    def __repr__(self) -> str:
+        string: str = f"""
+        Event: {self.name}
+        - Price: {self.price}
+        - Cost: {self.cost}
+        - Stock: {self.stock}
+        - Sales: {self.sales}
+        - Profit: {self.profit}
+        """
+        return dedent(string)
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def price(self) -> Decimal:
+        return self._price
+
+    @property
+    def cost(self) -> Decimal:
+        return self._cost
+
+    @property
+    def stock(self) -> int:
+        return self._stock
+
+    @property
+    def sales(self) -> int:
+        return self._sales
+
+    @sales.setter
+    def sales(self, value: int) -> None:
+        self._sales: int = value
+
+    @property
+    def profit_per_person(self) -> Decimal:
+        return self.price - self.cost
+
+    @property
+    def profit(self) -> Decimal:
+        return self.profit_per_person * self.sales
 
 
 def main() -> None:
@@ -28,7 +78,6 @@ def main() -> None:
             price=item.price,
             cost=item.cost,
             stock=item.stock,
-            sales=0,
         )
         for item in client.get_inventory_items()
     }
