@@ -109,7 +109,6 @@ class Client:
             response: JSONObject = self.request(query, variables=variables)
             orders: JSONObject = response["orders"]
             for order in orders["nodes"]:
-                print(order)
                 yield Order(order)
             page_info: JSONObject = orders["pageInfo"]
             if not page_info["hasNextPage"]:
