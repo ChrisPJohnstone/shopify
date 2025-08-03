@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-[ -z $VIRTUAL_ENV ] && source .venv/bin/activate
-[ -z $MERCHANT ] && source .env
-./src/app.py "$@"
+[ -z "${VIRTUAL_ENV}" ] && source .venv/bin/activate
+[ -z "${MERCHANT}" ] && source .env
+./src/app.py "${@}"
