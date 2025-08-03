@@ -1,15 +1,16 @@
-import odswriter
-
-from collections.abc import Iterable
 from pathlib import Path
 
+import odswriter
 
-def _write_ods(filepath: Path, data: Iterable) -> None:
+
+def _write_ods(filepath: Path, data: dict[str, list[tuple]]) -> None:
     with odswriter.writer(open(filepath, "wb")) as writer:
-        writer.writerows(data)
+        for sheet_name, rows in data.items():
+            sheet = writer.new_sheet(sheet_name)
+            sheet.writerows(rows)
 
 
-def write(filepath: Path, data: Iterable) -> None:
+def write(filepath: Path, data: dict[str, list[tuple]]) -> None:
     extension: str = filepath.suffix
     match extension:
         case ".ods":

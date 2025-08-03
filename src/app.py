@@ -9,7 +9,7 @@ from shopify_util import Client as ShopifyClient
 from spreadsheet_util import write
 
 QUERY_DIR: Path = Path("queries")
-OUTPUT_PATH: Path = Path.home() / "Downloads" / "profit.ods"
+OUTPUT_PATH: Path = Path.home() / "Downloads" / "orders.ods"
 
 
 class Controller:
@@ -32,8 +32,11 @@ class Controller:
             self._database_client.add_order(order)
 
     def output(self) -> None:
-        orders: list[tuple] = self._database_client.get_orders()
-        write(OUTPUT_PATH, orders)
+        sheets: dict[str, list[tuple]] = {
+            "orders": self._database_client.get_orders(),
+            "inventory_items": self._database_client.get_inventory_items(),
+        }
+        write(OUTPUT_PATH, sheets)
 
 
 def main() -> None:
