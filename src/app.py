@@ -4,13 +4,12 @@ from os import environ
 from pathlib import Path
 import logging
 
-from pandas import DataFrame
-
-from shopify_util import Client as ShopifyClient
 from database import Client as DatabaseClient
+from shopify_util import Client as ShopifyClient
+from spreadsheet_util import write
 
 QUERY_DIR: Path = Path("queries")
-OUTPUT_PATH: Path = Path.home() / "Downloads" / "profit.xlsx"
+OUTPUT_PATH: Path = Path.home() / "Downloads" / "profit.ods"
 
 
 class Controller:
@@ -32,18 +31,9 @@ class Controller:
         for order in self._shopify_client.get_orders(latest):
             self._database_client.add_order(order)
 
-    def get_profit(self) -> DataFrame:
-        records: list[tuple] = self._database_client.get_profit()
-        df: DataFrame = DataFrame.from_records(records)
-        df.columns = df.iloc[0]
-        df: DataFrame = df[1:]  # type: ignore
-        deduction_cols = df[["cost", "discounts", "fees"]]
-        df["total_deductions"] = deduction_cols.sum(axis=1)
-        df["before_tax"] = df["gross"] - df["total_deductions"]
-        df["tax"] = df["before_tax"] * 0.2
-        df["net"] = df["before_tax"] - df["tax"]
-        df.drop("before_tax", axis=1)
-        return df
+    def output(self) -> None:
+        orders: list[tuple] = self._database_client.get_orders()
+        write(OUTPUT_PATH, orders)
 
 
 def main() -> None:
@@ -56,8 +46,7 @@ def main() -> None:
     controller: Controller = Controller(database_client, shopify_client)
     controller.update_inventory_items()
     controller.update_orders()
-    profit: DataFrame = controller.get_profit()
-    profit.to_excel(OUTPUT_PATH)
+    controller.output()
 
 
 if __name__ == "__main__":

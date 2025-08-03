@@ -90,6 +90,6 @@ class Client:
             }
             self.execute(query, params)
 
-    def get_profit(self) -> list[tuple]:
-        query: str = self.query("profit")
+    def get_orders(self) -> list[tuple]:
+        query: str = self.query("orders")
         return self.execute(query)
