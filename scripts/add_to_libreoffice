@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Path is for arch linux
+
+if [[ "${PWD##*/}" != "shopify" ]]; then
+    echo "File not linked. Run from repo root"
+    exit 1
+fi
+ln -sfn "${PWD}/src/" "${HOME}/.config/libreoffice/4/user/Scripts/python/shopify"
