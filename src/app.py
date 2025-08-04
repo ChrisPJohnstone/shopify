@@ -1,44 +1,12 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser, Namespace
-from os import environ
-from pathlib import Path
 import logging
 
-from database import Client as DatabaseClient
-from shopify import Client as ShopifyClient
-
-QUERY_DIR: Path = Path("queries")
-OUTPUT_PATH: Path = Path.home() / "Downloads" / "shopify.ods"
-
-
-class Controller:
-    def __init__(
-        self,
-        database_client: DatabaseClient,
-        shopify_client: ShopifyClient,
-    ) -> None:
-        self._database_client: DatabaseClient = database_client
-        self._shopify_client: ShopifyClient = shopify_client
-
-    def update_inventory_items(self) -> None:
-        self._database_client.delete_inventory_items()
-        for item in self._shopify_client.get_inventory_items():
-            self._database_client.add_inventory_item(item)
-
-    def update_orders(self) -> None:
-        latest: str | None = self._database_client.get_latest("order")
-        for order in self._shopify_client.get_orders(latest):
-            self._database_client.add_order(order)
+from controller import Controller
 
 
 def main() -> None:
-    database_client: DatabaseClient = DatabaseClient(QUERY_DIR / "sql")
-    shopify_client: ShopifyClient = ShopifyClient(
-        query_dir=QUERY_DIR / "graphql",
-        merchant=environ["MERCHANT"],
-        token=environ["TOKEN"],
-    )
-    controller: Controller = Controller(database_client, shopify_client)
+    controller: Controller = Controller()
     controller.update_inventory_items()
     controller.update_orders()
 
