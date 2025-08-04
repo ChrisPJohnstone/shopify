@@ -1,3 +1,8 @@
 # Overview
 
-Shopify api client using only Python standard library
+Shopify API client using only Python standard library.
+
+# Usage
+
+- `src/local.py` Runs as a standard python file (e.g. `python src/local.py`)
+- `src/macro.py` Is intended to be used by LibreOffice Calc as a macro
