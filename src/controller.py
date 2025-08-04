@@ -69,3 +69,9 @@ class Controller:
         latest: str | None = self.database_client.get_latest("order")
         for order in self.shopify_client.get_orders(latest):
             self.database_client.add_order(order)
+
+    def get_inventory_items(self) -> list[tuple]:
+        return self.database_client.get_inventory_items()
+
+    def get_orders(self) -> list[tuple]:
+        return self.database_client.get_orders()
