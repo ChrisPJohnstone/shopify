@@ -6,7 +6,6 @@ import logging
 
 from database import Client as DatabaseClient
 from shopify_util import Client as ShopifyClient
-from spreadsheet_util import write
 
 QUERY_DIR: Path = Path("queries")
 OUTPUT_PATH: Path = Path.home() / "Downloads" / "shopify.ods"
@@ -31,13 +30,6 @@ class Controller:
         for order in self._shopify_client.get_orders(latest):
             self._database_client.add_order(order)
 
-    def output(self) -> None:
-        sheets: dict[str, list[tuple]] = {
-            "orders": self._database_client.get_orders(),
-            "inventory_items": self._database_client.get_inventory_items(),
-        }
-        write(OUTPUT_PATH, sheets)
-
 
 def main() -> None:
     database_client: DatabaseClient = DatabaseClient(QUERY_DIR / "sql")
@@ -49,7 +41,6 @@ def main() -> None:
     controller: Controller = Controller(database_client, shopify_client)
     controller.update_inventory_items()
     controller.update_orders()
-    controller.output()
 
 
 if __name__ == "__main__":
