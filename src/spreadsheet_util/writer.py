@@ -11,8 +11,7 @@ def _write_ods(filepath: Path, data: dict[str, list[tuple]]) -> None:
 
 
 def write(filepath: Path, data: dict[str, list[tuple]]) -> None:
-    extension: str = filepath.suffix
-    match extension:
+    match filepath.suffix:
         case ".ods":
             _write_ods(filepath, data)
         case _:

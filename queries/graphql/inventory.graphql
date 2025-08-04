@@ -23,12 +23,6 @@ fragment InventoryInfo on InventoryItem {
   }
 }
 
-query InventoryItem($id: ID!) {
-  inventoryItem(id: $id) {
-    ...InventoryInfo
-  }
-}
-
 query InventoryItems(
   $pageSize: Int!,
   $cursor: String,
@@ -38,9 +32,9 @@ query InventoryItems(
     first: $pageSize,
     after: $cursor,
     query: $query
-) {
+  ) {
     nodes {
-      id
+      ...InventoryInfo
     }
     pageInfo {
       hasNextPage

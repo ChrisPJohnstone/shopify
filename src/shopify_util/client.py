@@ -1,9 +1,9 @@
-from collections.abc import Iterable
+from collections.abc import Iterator
+from http.client import HTTPResponse
 from pathlib import Path
+from urllib.request import Request, urlopen
 import json
 import logging
-
-from shopify import GraphQL, Session
 
 from .responses import InventoryItem, Order
 from type_definitions import JSONObject
@@ -43,7 +43,11 @@ class Client:
 
     @property
     def shop_url(self) -> str:
-        return f"{self.merchant}.myshopify.com"
+        return f"https://{self.merchant}.myshopify.com"
+
+    @property
+    def api_url(self) -> str:
+        return f"{self.shop_url}/admin/api/unstable/graphql.json"
 
     @property
     def token(self) -> str:
@@ -54,63 +58,69 @@ class Client:
         logging.debug(f"Setting token")
         self._token: str = value
 
+    @property
+    def API_HEADERS(self) -> dict[str, str]:
+        return {
+            "Content-Type": "application/json",
+            "X-Shopify-Access-Token": self.token,
+        }
+
     def query(self, query: str) -> str:
         path: Path = self.query_dir / f"{query}.graphql"
         return path.read_text()
 
-    def _request(self, query: str, **kwargs) -> JSONObject:
-        result_string: str = GraphQL().execute(query=query, **kwargs)
-        result: JSONObject = json.loads(result_string)
-        if "data" not in result:
-            raise ValueError(json.dumps(result, indent=2))
-        return result["data"]
-
-    def request(self, query: str, **kwargs) -> JSONObject:
-        with Session.temp(self.shop_url, Client.API_VERSION, self.token):
-            return self._request(query, **kwargs)
-
-    def get_inventory_item(self, item_id: str) -> InventoryItem:
-        query: str = self.query("inventory")
-        response: JSONObject = self.request(
-            query=query,
-            operation_name="InventoryItem",
-            variables={"id": item_id},
+    def _request(self, data: bytes) -> bytes:
+        request: Request = Request(
+            method="POST",
+            url=self.api_url,
+            headers=self.API_HEADERS,
+            data=data,
         )
-        return InventoryItem(response)
+        response: HTTPResponse = urlopen(request)
+        return response.read()
+
+    def request(self, data: JSONObject) -> JSONObject:
+        _data: bytes = json.dumps(data).encode()
+        response_bytes: bytes = self._request(_data)
+        response_string: str = response_bytes.decode()
+        return json.loads(response_string)
 
     def get_inventory_items(
         self,
         latest: str | None = None,
-    ) -> Iterable[InventoryItem]:
-        query: str = self.query("inventory")
-        variables: dict[str, int | str] = {"pageSize": Client.PAGE_SIZE}
-        if latest is not None:
+    ) -> Iterator[InventoryItem]:
+        variables: JSONObject = {"pageSize": Client.PAGE_SIZE}
+        if latest:
             variables["query"] = f"created_at:>'{latest}'"
+        data: JSONObject = {
+            "query": self.query("inventory"),
+            "variables": variables,
+        }
         while True:
-            response: JSONObject = self.request(
-                query=query,
-                operation_name="InventoryItems",
-                variables=variables,
-            )
-            inventory_items: JSONObject = response["inventoryItems"]
+            response: JSONObject = self.request(data)
+            inventory_items: JSONObject = response["data"]["inventoryItems"]
             for item in inventory_items["nodes"]:
-                yield self.get_inventory_item(item["id"])
+                yield InventoryItem(item)
             page_info: JSONObject = inventory_items["pageInfo"]
             if not page_info["hasNextPage"]:
                 break
-            variables["cursor"] = page_info["endCursor"]
+            data["variables"]["cursor"] = page_info["endCursor"]
 
-    def get_orders(self, latest: str | None = None) -> Iterable[Order]:
+    def get_orders(self, latest: str | None = None) -> Iterator[Order]:
         query: str = self.query("orders")
         variables: dict[str, int | str] = {"pageSize": Client.PAGE_SIZE}
         if latest is not None:
             variables["query"] = f"created_at:>'{latest}'"
+        data: JSONObject = {
+            "query": query,
+            "variables": variables,
+        }
         while True:
-            response: JSONObject = self.request(query, variables=variables)
-            orders: JSONObject = response["orders"]
+            response: JSONObject = self.request(data)
+            orders: JSONObject = response["data"]["orders"]
             for order in orders["nodes"]:
                 yield Order(order)
             page_info: JSONObject = orders["pageInfo"]
             if not page_info["hasNextPage"]:
                 break
-            variables["cursor"] = page_info["endCursor"]
+            data["variables"]["cursor"] = page_info["endCursor"]

@@ -9,24 +9,20 @@ class InventoryItem(Base):
     def __post_init__(self) -> None:
         self.__inventory_levels: list[InventoryLevel] = [
             InventoryLevel(value)
-            for value in self._inventory_item["inventoryLevels"]["nodes"]
+            for value in self._node["inventoryLevels"]["nodes"]
         ]
 
     @property
-    def _inventory_item(self) -> JSONObject:
-        return self._node["inventoryItem"]
-
-    @property
     def id(self) -> str:
-        return self._inventory_item["id"]
+        return self._node["id"]
 
     @property
     def created_at(self) -> str:
-        return self._inventory_item["createdAt"]
+        return self._node["createdAt"]
 
     @property
     def _variant(self) -> JSONObject:
-        return self._inventory_item["variant"]
+        return self._node["variant"]
 
     @property
     def variant_id(self) -> str:
@@ -44,7 +40,7 @@ class InventoryItem(Base):
 
     @property
     def _unit_cost(self) -> JSONObject:
-        if (cost := self._inventory_item["unitCost"]) is None:
+        if (cost := self._node["unitCost"]) is None:
             return {}
         return cost
 

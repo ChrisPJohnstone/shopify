@@ -9,7 +9,7 @@ from shopify_util import Client as ShopifyClient
 from spreadsheet_util import write
 
 QUERY_DIR: Path = Path("queries")
-OUTPUT_PATH: Path = Path.home() / "Downloads" / "orders.ods"
+OUTPUT_PATH: Path = Path.home() / "Downloads" / "shopify.ods"
 
 
 class Controller:
