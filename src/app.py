@@ -22,8 +22,8 @@ class Controller:
         self._shopify_client: ShopifyClient = shopify_client
 
     def update_inventory_items(self) -> None:
-        latest: str | None = self._database_client.get_latest("inventory_item")
-        for item in self._shopify_client.get_inventory_items(latest):
+        self._database_client.delete_inventory_items()
+        for item in self._shopify_client.get_inventory_items():
             self._database_client.add_inventory_item(item)
 
     def update_orders(self) -> None:

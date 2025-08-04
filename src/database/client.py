@@ -94,6 +94,10 @@ class Client:
         query: str = self.query("orders")
         return self.execute(query)
 
+    def delete_inventory_items(self) -> list[tuple]:
+        query: str = self.query("delete_inventory_items")
+        return self.execute(query)
+
     def get_inventory_items(self) -> list[tuple]:
         query: str = self.query("inventory_items")
         return self.execute(query)
