@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-[ -z "${MERCHANT}" ] && source .env
-./src/app.py "${@}"

@@ -1,6 +1,8 @@
-# Env Files
-.env
+# Virtual Env
 .venv
 
 # Python Files
 __pycache__/
+
+# Env Config
+env.json

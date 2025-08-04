@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from os import environ
 from pathlib import Path
+import json
 
 from database import Client as DatabaseClient
 from shopify import Client as ShopifyClient
@@ -9,27 +9,32 @@ from shopify import Client as ShopifyClient
 class Controller:
     def __init__(
         self,
-        query_dir: Path | None = None,
+        project_dir: Path | None = None,
     ) -> None:
-        self.query_dir = query_dir
+        self.project_dir = project_dir
+        env_config: dict[str, str] = self.env_config()
         self.database_client = DatabaseClient(self.sql_query_dir)
         self.shopify_client = ShopifyClient(
             query_dir=self.graphql_query_dir,
-            merchant=environ["MERCHANT"],
-            token=environ["TOKEN"],
+            merchant=env_config["Merchant"],
+            token=env_config["Token"],
         )
 
     @property
-    def DEFAULT_QUERY_DIR(self) -> Path:
-        return Path("queries")
+    def project_dir(self) -> Path:
+        return self._query_dir
+
+    @project_dir.setter
+    def project_dir(self, value: Path | None) -> None:
+        self._query_dir: Path = value or Path.cwd()
+
+    def env_config(self) -> dict[str, str]:
+        filepath: Path = self.project_dir / "env.json"
+        return json.loads(filepath.read_text())
 
     @property
     def query_dir(self) -> Path:
-        return self._query_dir
-
-    @query_dir.setter
-    def query_dir(self, value: Path | None) -> None:
-        self._query_dir: Path = value or self.DEFAULT_QUERY_DIR
+        return self._query_dir / "queries"
 
     @property
     def sql_query_dir(self) -> Path:
