@@ -5,7 +5,7 @@ from pathlib import Path
 import logging
 
 from database import Client as DatabaseClient
-from shopify_util import Client as ShopifyClient
+from shopify import Client as ShopifyClient
 
 QUERY_DIR: Path = Path("queries")
 OUTPUT_PATH: Path = Path.home() / "Downloads" / "shopify.ods"

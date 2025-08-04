@@ -3,7 +3,7 @@ from sqlite3 import Connection, Cursor, connect
 from typing import Any, Sequence
 import logging
 
-from shopify_util import InventoryItem, Order
+from shopify import InventoryItem, Order
 
 type QueryParams = dict[str, Any] | Sequence[Any] | None
 
