@@ -1,6 +1,10 @@
 # Overview
 
-Shopify API client using only Python standard library.
+Shopify scripts built using Python standard library.
+
+## Why / Background
+
+I'm helping a relative with managing their business, currently the project is just to keep track of profitability, due to heavy need for manual data entry (limitations in the fields available in Shopify) and my lack of desire to build a front end this code is primarily designed to run as macros in LibreOffice Calc.
 
 # Usage
 
