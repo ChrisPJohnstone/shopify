@@ -11,3 +11,8 @@ I'm helping a relative with managing their business, currently the project is ju
 - `src/local.py` Runs as a standard python file (e.g. `python src/local.py`)
 - `src/macro.py` Is intended to be used by LibreOffice Calc as a macro
     - Can be added to libreoffice scripts using `./scripts/add_to_libreoffice`
+
+# Spreadsheet Notes
+
+- Macro works on open document
+    *Tools > Customize > Open Document*
