@@ -31,8 +31,22 @@ class LibreCalc:
             raise ValueError(f"Sheet {name} does not exist")
         return self.sheets.getByName(name)
 
+    def clear_sheet(self, sheet: Any) -> None:
+        cursor: Any = sheet.createCursor()
+        cursor.gotoEndOfUsedArea(False)
+        cursor.gotoStartOfUsedArea(True)
+        used_range: Any = cursor.getRangeAddress()
+        if used_range.EndRow == 0:
+            return
+        sheet.getCellRangeByPosition(
+            0,
+            1,
+            used_range.EndColumn,
+            used_range.EndRow,
+        ).clearContents(1023)
+
     def write_sheet(self, sheet: Any, data: Iterable[Iterable[Any]]) -> None:
-        # TODO: Delete all data before writing data
+        self.clear_sheet(sheet)
         for y, row in enumerate(data):
             for x, value in enumerate(row):
                 cell = sheet.getCellByPosition(x, y)
