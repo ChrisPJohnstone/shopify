@@ -53,7 +53,7 @@ class LibreCalc:
                 cell.String = value
 
 
-def main() -> None:
+def main(user: Any) -> None:
     controller: Controller = Controller(PROJECT_DIR)
     controller.update_inventory_items()
     controller.update_orders()
