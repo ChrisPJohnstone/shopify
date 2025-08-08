@@ -45,12 +45,18 @@ class LibreCalc:
             used_range.EndRow,
         ).clearContents(1023)
 
+    def write_cell(self, cell: Any, value: Any) -> None:
+        if isinstance(value, str):
+            cell.String = value
+            return
+        cell.Value = value
+
     def write_sheet(self, sheet: Any, data: Iterable[Iterable[Any]]) -> None:
         self.clear_sheet(sheet)
         for y, row in enumerate(data):
             for x, value in enumerate(row):
                 cell = sheet.getCellByPosition(x, y)
-                cell.String = value
+                self.write_cell(cell, value)
 
 
 def main(*args) -> None:
