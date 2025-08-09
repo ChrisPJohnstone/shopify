@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 MACRO_PATH="${HOME}/.config/libreoffice/4/user/Scripts/python/"
+mkdir -p "${MACRO_PATH}"
 cp "${PWD}/src/macro.py" "${MACRO_PATH}"
-sed -i "s@PATH_PLACEHOLDER@${PWD}@" "${MACRO_PATH}/macro.py"
+sed -i "s@PATH_PLACEHOLDER@${PWD}@" "${MACRO_PATH}macro.py"
