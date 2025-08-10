@@ -1,5 +1,18 @@
 #!/usr/bin/env bash
-MACRO_PATH="${HOME}/.config/libreoffice/4/user/Scripts/python/"
+if [[ "$(uname)" == "Linux" ]]; then
+    APP_PATH="${HOME}/.config/libreoffice"
+elif [[ "$(uname)" == "Darwin" ]]; then
+    APP_PATH="${HOME}/Library/Application Support/LibreOffice"
+else
+    echo "Unknown OS, please set BROWSER manually or update bashrc"
+    exit 1
+fi
+
+MACRO_PATH="${APP_PATH}/4/user/Scripts/python"
 mkdir -p "${MACRO_PATH}"
 cp "${PWD}/src/macro.py" "${MACRO_PATH}"
-sed -i "s@PATH_PLACEHOLDER@${PWD}@" "${MACRO_PATH}macro.py"
+if [[ "$(uname)" == "Linux" ]]; then
+    sed -i "s@PATH_PLACEHOLDER@${PWD}@" "${MACRO_PATH}/macro.py"
+elif [[ "$(uname)" == "Darwin" ]]; then
+    sed -i '' -e "s@PATH_PLACEHOLDER@${PWD}@" "${MACRO_PATH}/macro.py"
+fi
