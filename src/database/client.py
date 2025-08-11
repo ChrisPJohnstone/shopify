@@ -91,13 +91,16 @@ class Client:
             self.execute(query, params)
 
     def get_orders(self) -> list[tuple]:
+        self.create_table("orders")
         query: str = self.query("orders")
         return self.execute(query)
 
     def delete_inventory_items(self) -> list[tuple]:
+        self.create_table("inventory_items")
         query: str = self.query("delete_inventory_items")
         return self.execute(query)
 
     def get_inventory_items(self) -> list[tuple]:
+        self.create_table("inventory_items")
         query: str = self.query("inventory_items")
         return self.execute(query)
