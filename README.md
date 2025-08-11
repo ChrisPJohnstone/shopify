@@ -16,3 +16,8 @@ I'm helping a relative with managing their business, currently the project is ju
 
 - Macro works on open document
     *Tools > Customize > Open Document*
+
+# Requirements
+
+- Python3.10
+    - Version is the one used by LibreOffice on Mac to ensure compatibility

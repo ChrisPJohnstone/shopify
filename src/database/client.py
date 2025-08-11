@@ -5,7 +5,7 @@ import logging
 
 from shopify import InventoryItem, Order
 
-type QueryParams = dict[str, Any] | Sequence[Any] | None
+QueryParams = dict[str, Any] | Sequence[Any] | None
 
 
 class Client:

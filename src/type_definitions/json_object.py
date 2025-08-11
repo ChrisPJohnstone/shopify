@@ -1,4 +1,4 @@
 from typing import Any
 
 
-type JSONObject = dict[str, Any]
+JSONObject = dict[str, Any]
