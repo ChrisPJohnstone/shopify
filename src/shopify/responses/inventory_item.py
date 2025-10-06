@@ -1,4 +1,5 @@
 from decimal import Decimal
+from typing import Any
 
 from ._base import Base
 from .inventory_level import InventoryLevel
@@ -55,3 +56,17 @@ class InventoryItem(Base):
     @property
     def stock(self) -> int:
         return sum(level.available for level in self._inventory_levels)
+
+    @property
+    def as_list(self) -> list[list[Any]]:
+        return [
+            [
+                self.id,
+                self.created_at,
+                self.variant_id,
+                self.variant_name,
+                float(self.variant_price),
+                float(self.unit_cost),
+                self.stock,
+            ]
+        ]

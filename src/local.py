@@ -7,8 +7,9 @@ from controller import Controller
 
 def main() -> None:
     controller: Controller = Controller()
-    controller.update_inventory_items()
-    controller.update_orders()
+    for x, row in enumerate(controller.get_inventory_items()):
+        print(x, row)
+    # controller.get_orders()
 
 
 if __name__ == "__main__":

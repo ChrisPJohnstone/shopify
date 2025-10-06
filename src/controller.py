@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
+from collections.abc import Iterator
 from pathlib import Path
 import json
 
-from database import Client as DatabaseClient
-from shopify import Client as ShopifyClient
+from shopify import Client as ShopifyClient, InventoryItem, Order
 
 
 class Controller:
@@ -13,7 +13,6 @@ class Controller:
     ) -> None:
         self.project_dir = project_dir
         env_config: dict[str, str] = self.env_config()
-        self.database_client = DatabaseClient(self.sql_query_dir)
         self.shopify_client = ShopifyClient(
             query_dir=self.graphql_query_dir,
             merchant=env_config["Merchant"],
@@ -41,14 +40,6 @@ class Controller:
         return self.query_dir / "sql"
 
     @property
-    def database_client(self) -> DatabaseClient:
-        return self._database_client
-
-    @database_client.setter
-    def database_client(self, value: DatabaseClient) -> None:
-        self._database_client: DatabaseClient = value
-
-    @property
     def graphql_query_dir(self) -> Path:
         return self.query_dir / "graphql"
 
@@ -60,18 +51,8 @@ class Controller:
     def shopify_client(self, value: ShopifyClient) -> None:
         self._shopify_client: ShopifyClient = value
 
-    def update_inventory_items(self) -> None:
-        self.database_client.delete_inventory_items()
-        for item in self.shopify_client.get_inventory_items():
-            self.database_client.add_inventory_item(item)
+    def get_inventory_items(self) -> Iterator[InventoryItem]:
+        yield from self.shopify_client.get_inventory_items()
 
-    def update_orders(self) -> None:
-        latest: str | None = self.database_client.get_latest("order")
-        for order in self.shopify_client.get_orders(latest):
-            self.database_client.add_order(order)
-
-    def get_inventory_items(self) -> list[tuple]:
-        return self.database_client.get_inventory_items()
-
-    def get_orders(self) -> list[tuple]:
-        return self.database_client.get_orders()
+    def get_orders(self) -> Iterator[Order]:
+        yield from self.shopify_client.get_orders()

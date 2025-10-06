@@ -53,16 +53,20 @@ class LibreCalc:
 
     def write_sheet(self, sheet: Any, data: Iterable[Iterable[Any]]) -> None:
         self.clear_sheet(sheet)
-        for y, row in enumerate(data):
-            for x, value in enumerate(row):
-                cell = sheet.getCellByPosition(x, y)
-                self.write_cell(cell, value)
+        for y, rows in enumerate(data):
+            """
+            This is a horifically hacky solution because I built this whole
+            thing with sqlite as a core component and cba getting the libary in
+            to libreoffice.
+            """
+            for row in rows.as_list:
+                for x, value in enumerate(row):
+                    cell = sheet.getCellByPosition(x, y)
+                    self.write_cell(cell, value)
 
 
 def main(*args) -> None:
     controller: Controller = Controller(PROJECT_DIR)
-    controller.update_inventory_items()
-    controller.update_orders()
     spreadsheet_client: LibreCalc = LibreCalc()
     spreadsheet_client.write_sheet(
         sheet=spreadsheet_client.get_sheet(INVENTORY_ITEMS_SHEET),

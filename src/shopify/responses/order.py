@@ -1,4 +1,6 @@
+from collections.abc import Iterator
 from decimal import Decimal
+from typing import Any
 
 from ._base import Base
 from .line_item import LineItem
@@ -33,3 +35,16 @@ class Order(Base):
     @property
     def fees(self) -> Decimal:
         return Decimal(sum(t.total_fees for t in self.transactions))
+
+    @property
+    def as_list(self) -> Iterator[list[Any]]:
+        for line_item in self.line_items:
+            yield [
+                self.id,
+                self.created_at,
+                line_item.variant_id,
+                line_item.variant_name,
+                float(line_item.price),
+                float(line_item.discounted_price),
+                float(self.fees),
+            ]
